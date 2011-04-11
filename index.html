@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html class="no-js">
+
+<head>
+<style>
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+
+body {
+	font-family:"Helvetica Neue",Helvetica,Arial,Verdana,Tahoma,sans-serif;
+}
+
+#list {
+	position:relative;
+	width:600px;
+	height:400px;
+	margin:80px auto;
+	background:#13478a url("flag.png");
+	font-size:27px;
+	font-weight:bold;
+	letter-spacing:1px;
+}
+
+#list li {
+	height:80px;
+	line-height:80px;
+	padding:0 15px;
+}
+
+#list a {
+	color:#000;
+	display:block;
+	text-decoration:none;
+	text-shadow:#fff 0 0 5px;
+}
+
+#ircweb {
+	position:absolute;
+	right:15px;
+	bottom:0;
+}
+</style>
+</head>
+
+<body>
+<ul id="list">
+	<li id="blog"><a href="http://blog.spackeria.org/">Blog</a></li>
+	<li id="wiki"><a href="http://wiki.spackeria.org/">Wiki</a></li>
+	<li id="twit"><a href="http://twitter.com/spackeria">Twitter</a></li>
+	<li id="face"><a href="http://www.facebook.com/Spackeria">Facebook</a></li>
+	<li id="irc"><a href="irc://chat.eu.freenode.net/spackeria" id="ircurl">IRC: freenode #spackeria</a> <a href="http://webchat.freenode.net/?channels=spackeria" id="ircweb">(Webchat)</a></li>
+</ul>
+<script src="jquery-1.5.2.min.js"></script>
+<script src="modernizr-1.7.min.js"></script>
+<script>
+$(function () {
+	var anim = function (li, start) {
+		var li = $(li);
+		var a = $('a:first', li);
+		if (start) {
+			li.css({
+				'background':     'url("000000.png") no-repeat center 80px'
+			});
+			a.css({
+				'letter-spacing': '1px',
+				'color':          '#000'
+			});
+		}
+		a.animate({
+			'letter-spacing': (start ? 2 : 1) + 'px'
+		}, {
+			'duration': 'fast',
+			'queue':    false,
+			'step':     function (now, fx) {
+				var fac = now - 1;
+				var hex = Math.floor(255 * fac).toString(16);
+				if (hex.length == 1) {
+					hex = '0' + hex;
+				}
+				a.css({
+					'color':               '#' + hex + hex + hex
+				});
+				li.css({
+					'background-position': 'center ' + (80 - (80 * fac)) + 'px'
+				});
+			}
+		});
+	};
+	$('#list li').bind('mouseenter', function (ev) {
+		anim(this, true);
+	}).bind('mouseleave', function (ev) {
+		anim(this, false);
+	});
+});
+</script>
+</body>
+
+</html>
