@@ -67,12 +67,17 @@ body {
 	font-size:27px;
 	font-weight:bold;
 	letter-spacing:1px;
+	-webkit-border-radius:10px;
+	-moz-border-radius:10px;
+	border-radius:10px;
 }
 
 #list li {
 	height:80px;
 	line-height:80px;
 	padding:0 15px;
+	text-align:center;
+	background:url("highlight.png") no-repeat center 80px;
 }
 
 #list a {
@@ -80,6 +85,29 @@ body {
 	display:block;
 	text-decoration:none;
 	text-shadow:#fff 0 0 5px;
+	letter-spacing:1px;
+}
+
+#list li.first {
+	-webkit-border-top-left-radius:10px;
+	-webkit-border-top-right-radius:10px;
+	-moz-border-radius-topleft:10px;
+	-moz-border-radius-topright:10px;
+	border-top-left-radius:10px;
+	border-top-right-radius:10px;
+}
+
+#list li.last {
+	-webkit-border-bottom-right-radius:10px;
+	-webkit-border-bottom-left-radius:10px;
+	-moz-border-radius-bottomright:10px;
+	-moz-border-radius-bottomleft:10px;
+	border-bottom-right-radius:10px;
+	border-bottom-left-radius:10px;
+}
+
+#list li ul {
+	display:none;
 }
 
 #ircweb {
@@ -92,35 +120,32 @@ body {
 
 <body>
 <ul id="list">
-	<li id="blog"><a href="http://blog.spackeria.org/">Blog</a></li>
+	<li id="blog" class="first"><a href="http://blog.spackeria.org/">Blog</a></li>
 	<li id="wiki"><a href="http://wiki.spackeria.org/">Wiki</a></li>
 	<li id="twit"><a href="http://twitter.com/spackeria">Twitter</a></li>
 	<li id="face"><a href="http://www.facebook.com/Spackeria">Facebook</a></li>
-	<li id="irc"><a href="irc://chat.eu.freenode.net/spackeria" id="ircurl">IRC: freenode #spackeria</a> <a href="http://webchat.freenode.net/?channels=spackeria" id="ircweb">(Webchat)</a></li>
+	<li id="irc" class="last"><a href="irc://chat.eu.freenode.net/spackeria">IRC</a><ul>
+		<li><a href="http://webchat.freenode.net/?channels=spackeria">Webchat</a></li>
+		<li><a href="irc://chat.eu.freenode.net/spackeria">irc://chat.eu.freenode.net/spackeria</a></li>
+		<li><a href="http://freenode.net/">[we’re on freenode]</a></li>
+	</ul></li>
 </ul>
 <script src="jquery-1.5.2.min.js"></script>
 <script src="modernizr-1.7.min.js"></script>
 <script>
 $(function () {
+	var spacing = [1, 7];
+	var spaceint = spacing[1] - spacing[0];
 	var anim = function (li, start) {
 		var li = $(li);
 		var a = $('a:first', li);
-		if (start) {
-			li.css({
-				'background':     'url("000000.png") no-repeat center 80px'
-			});
-			a.css({
-				'letter-spacing': '1px',
-				'color':          '#000'
-			});
-		}
 		a.animate({
-			'letter-spacing': (start ? 2 : 1) + 'px'
+			'letter-spacing': (start ? spacing[1] : spacing[0]) + 'px'
 		}, {
-			'duration': 'fast',
+			'duration': 500,
 			'queue':    false,
 			'step':     function (now, fx) {
-				var fac = now - 1;
+				var fac = (now - spacing[0]) / spaceint;
 				var hex = Math.floor(255 * fac).toString(16);
 				if (hex.length == 1) {
 					hex = '0' + hex;
