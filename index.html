@@ -61,7 +61,6 @@ body {
 #logo {
 	width:600px;
 	margin:80px auto;
-	font-size:24px;
 	font-weight:bold;
 }
 
@@ -90,28 +89,37 @@ body {
 	border-bottom-left-radius:10px;
 }
 
-#list {
+#listwrap {
 	height:0;
-	width:100%;
 	overflow:hidden;
 	background:#13478a;
 	text-align:center;
+	font-size:24px;
 	letter-spacing:1px;
+	line-height:80px;
 }
 
-.js #list {
+.no-js #listwrap {
+	height:80px;
+}
+
+.js #listwrap {
 	letter-spacing:-2px;
 }
 
-.no-js #list {
+#list {
 	height:80px;
+	width:100%;
+}
+
+.js #list {
+	position:relative;
+	top:-40px;
 }
 
 #list li {
 	height:80px;
-	line-height:80px;
 	padding:0 5px;
-	text-align:center;
 	display:inline;
 }
 
@@ -140,17 +148,19 @@ body {
 <body>
 <div id="logo">
 	<div id="top"></div>
-	<ul id="list">
-		<li id="blog" class="first"><a href="http://blog.spackeria.org/">Blog</a></li>
-		<li id="wiki"><a href="http://wiki.spackeria.org/">Wiki</a></li>
-		<li id="twit"><a href="http://twitter.com/spackeria">Twitter</a></li>
-		<li id="face"><a href="http://www.facebook.com/Spackeria">Facebook</a></li>
-		<li id="irc" class="last"><a href="irc://chat.eu.freenode.net/spackeria">IRC</a><ul>
-			<li><a href="http://webchat.freenode.net/?channels=spackeria">Webchat</a></li>
-			<li><a href="irc://chat.eu.freenode.net/spackeria">irc://chat.eu.freenode.net/spackeria</a></li>
-			<li><a href="http://freenode.net/">[we’re on freenode]</a></li>
-		</ul></li>
-	</ul>
+	<div id="listwrap">
+		<ul id="list">
+			<li id="blog" class="first"><a href="http://blog.spackeria.org/">Blog</a></li>
+			<li id="wiki"><a href="http://wiki.spackeria.org/">Wiki</a></li>
+			<li id="twit"><a href="http://twitter.com/spackeria">Twitter</a></li>
+			<li id="face"><a href="http://www.facebook.com/Spackeria">Facebook</a></li>
+			<li id="irc" class="last"><a href="irc://chat.eu.freenode.net/spackeria">IRC</a><ul>
+				<li><a href="http://webchat.freenode.net/?channels=spackeria">Webchat</a></li>
+				<li><a href="irc://chat.eu.freenode.net/spackeria">irc://chat.eu.freenode.net/spackeria</a></li>
+				<li><a href="http://freenode.net/">[we’re on freenode]</a></li>
+			</ul></li>
+		</ul>
+	</div>
 	<div id="bot"></div>
 </div>
 <script src="jquery-1.5.2.min.js"></script>
@@ -158,9 +168,19 @@ body {
 <script>
 $(function () {
 	var anim = function (to) {
-		$('#list').animate(to, {
+		var list = $('#list');
+		var logo = $('#logo');
+		$('#listwrap').animate(to, {
 			duration: 500,
-			queue:    false
+			queue:    false,
+			step:     function (now, fx) {
+				if (fx.prop != 'height') {
+					return;
+				}
+				var half = now / 2;
+				list.css('top', (-40 + half) + 'px');
+				logo.css('margin-top', (80 - half) + 'px');
+			}
 		});
 	};
 	$('#logo').bind('mouseenter', function (ev) {
