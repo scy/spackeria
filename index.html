@@ -58,52 +58,71 @@ body {
 	font-family:"Helvetica Neue",Helvetica,Arial,Verdana,Tahoma,sans-serif;
 }
 
-#list {
-	position:relative;
+#logo {
 	width:600px;
-	height:400px;
 	margin:80px auto;
-	background:#13478a url("flag.png");
-	font-size:27px;
+	font-size:24px;
 	font-weight:bold;
-	letter-spacing:1px;
-	-webkit-border-radius:10px;
-	-moz-border-radius:10px;
-	border-radius:10px;
 }
 
-#list li {
-	height:80px;
-	line-height:80px;
-	padding:0 15px;
-	text-align:center;
-	background:url("highlight.png") no-repeat center 80px;
+#top, #bot {
+	height:200px;
+	background:#13478a url("flag.png") no-repeat;
 }
 
-#list a {
-	color:#000;
-	display:block;
-	text-decoration:none;
-	text-shadow:#fff 0 0 5px;
-	letter-spacing:1px;
-}
-
-#list li.first {
-	-webkit-border-top-left-radius:10px;
+#top {
 	-webkit-border-top-right-radius:10px;
-	-moz-border-radius-topleft:10px;
+	-webkit-border-top-left-radius:10px;
 	-moz-border-radius-topright:10px;
-	border-top-left-radius:10px;
+	-moz-border-radius-topleft:10px;
 	border-top-right-radius:10px;
+	border-top-left-radius:10px;
+	background-position:center top;
 }
 
-#list li.last {
+#bot{
+	background-position:center bottom;
 	-webkit-border-bottom-right-radius:10px;
 	-webkit-border-bottom-left-radius:10px;
 	-moz-border-radius-bottomright:10px;
 	-moz-border-radius-bottomleft:10px;
 	border-bottom-right-radius:10px;
 	border-bottom-left-radius:10px;
+}
+
+#list {
+	height:0;
+	width:100%;
+	overflow:hidden;
+	background:#13478a;
+	text-align:center;
+	letter-spacing:1px;
+}
+
+.js #list {
+	letter-spacing:-2px;
+}
+
+.no-js #list {
+	height:80px;
+}
+
+#list li {
+	height:80px;
+	line-height:80px;
+	padding:0 5px;
+	text-align:center;
+	display:inline;
+}
+
+#list a {
+	color:#fff;
+	display:inline-block;
+	text-decoration:none;
+}
+
+#list a:hover {
+	text-shadow:#000 0 0 6px;
 }
 
 #list li ul {
@@ -119,50 +138,42 @@ body {
 </head>
 
 <body>
-<ul id="list">
-	<li id="blog" class="first"><a href="http://blog.spackeria.org/">Blog</a></li>
-	<li id="wiki"><a href="http://wiki.spackeria.org/">Wiki</a></li>
-	<li id="twit"><a href="http://twitter.com/spackeria">Twitter</a></li>
-	<li id="face"><a href="http://www.facebook.com/Spackeria">Facebook</a></li>
-	<li id="irc" class="last"><a href="irc://chat.eu.freenode.net/spackeria">IRC</a><ul>
-		<li><a href="http://webchat.freenode.net/?channels=spackeria">Webchat</a></li>
-		<li><a href="irc://chat.eu.freenode.net/spackeria">irc://chat.eu.freenode.net/spackeria</a></li>
-		<li><a href="http://freenode.net/">[we’re on freenode]</a></li>
-	</ul></li>
-</ul>
+<div id="logo">
+	<div id="top"></div>
+	<ul id="list">
+		<li id="blog" class="first"><a href="http://blog.spackeria.org/">Blog</a></li>
+		<li id="wiki"><a href="http://wiki.spackeria.org/">Wiki</a></li>
+		<li id="twit"><a href="http://twitter.com/spackeria">Twitter</a></li>
+		<li id="face"><a href="http://www.facebook.com/Spackeria">Facebook</a></li>
+		<li id="irc" class="last"><a href="irc://chat.eu.freenode.net/spackeria">IRC</a><ul>
+			<li><a href="http://webchat.freenode.net/?channels=spackeria">Webchat</a></li>
+			<li><a href="irc://chat.eu.freenode.net/spackeria">irc://chat.eu.freenode.net/spackeria</a></li>
+			<li><a href="http://freenode.net/">[we’re on freenode]</a></li>
+		</ul></li>
+	</ul>
+	<div id="bot"></div>
+</div>
 <script src="jquery-1.5.2.min.js"></script>
 <script src="modernizr-1.7.min.js"></script>
 <script>
 $(function () {
-	var spacing = [1, 7];
-	var spaceint = spacing[1] - spacing[0];
-	var anim = function (li, start) {
-		var li = $(li);
-		var a = $('a:first', li);
-		a.animate({
-			'letter-spacing': (start ? spacing[1] : spacing[0]) + 'px'
-		}, {
-			'duration': 500,
-			'queue':    false,
-			'step':     function (now, fx) {
-				var fac = (now - spacing[0]) / spaceint;
-				var hex = Math.floor(255 * fac).toString(16);
-				if (hex.length == 1) {
-					hex = '0' + hex;
-				}
-				a.css({
-					'color':               '#' + hex + hex + hex
-				});
-				li.css({
-					'background-position': 'center ' + (80 - (80 * fac)) + 'px'
-				});
-			}
+	var anim = function (to) {
+		$('#list').animate(to, {
+			duration: 500,
+			queue:    false
 		});
 	};
-	$('#list li').bind('mouseenter', function (ev) {
-		anim(this, true);
-	}).bind('mouseleave', function (ev) {
-		anim(this, false);
+	$('#logo').bind('mouseenter', function (ev) {
+		anim({
+			'height':         '80px',
+			'letter-spacing': '2px'
+		});
+	});
+	$('#logo').bind('mouseleave', function (ev) {
+		anim({
+			'height':         '0px',
+			'letter-spacing': '-2px'
+		});
 	});
 });
 </script>
