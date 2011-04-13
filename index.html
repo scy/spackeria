@@ -134,14 +134,17 @@ body {
 	text-shadow:#000 0 0 6px;
 }
 
-#list li ul {
-	display:none;
+#list ul {
+	padding:15px 0 20px;
+	background-color:#008;
 }
 
-#ircweb {
-	position:absolute;
-	right:15px;
-	bottom:0;
+#list ul li {
+	display:block;
+	height:22px;
+	font-size:18px;
+	line-height:22px;
+	letter-spacing:1px;
 }
 </style>
 </head>
@@ -168,6 +171,7 @@ body {
 <script src="modernizr-1.7.min.js"></script>
 <script>
 $(function () {
+	var ircopen = false;
 	var anim = function (to) {
 		var list = $('#list');
 		var logo = $('#logo');
@@ -191,10 +195,44 @@ $(function () {
 		});
 	});
 	$('#logo').bind('mouseleave', function (ev) {
-		anim({
-			'height':         '0px',
-			'letter-spacing': '-2px'
-		});
+		var closelogo = function () {
+			anim({
+				'height':         '0px',
+				'letter-spacing': '-2px'
+			});
+		};
+		var ircclosed = function () {
+			ircopen = false;
+			closelogo();
+		};
+		if (ircopen) {
+			$('#listwrap').animate({
+				'height': '80px'
+			}, {
+				duration: 300,
+				complete: ircclosed
+			});
+		} else {
+			closelogo();
+		}
+	});
+	$('#irc a:first').click(function (ev) {
+		if (ircopen) {
+			ircopen = false;
+			$('#listwrap').animate({
+				'height': '80px'
+			}, {
+				duration: 300
+			});
+		} else {
+			ircopen = true;
+			$('#listwrap').animate({
+				'height': '181px'
+			}, {
+				duration: 500
+			});
+		}
+		return false;
 	});
 });
 </script>
