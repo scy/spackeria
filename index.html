@@ -205,6 +205,9 @@ $(function () {
 			}
 		});
 	};
+	$('#logo a').click(function (ev) {
+		ev.stopPropagation();
+	});
 	$('#logo').bind('mouseenter click', function (ev) {
 		anim({
 			'height':         '80px',
