@@ -1,3 +1,5 @@
+AddDefaultCharset utf-8
+AddCharset utf-8 .html .css .js .xml .json .rss
 <IfModule mod_deflate.c>
 	<IfModule mod_setenvif.c>
 		<IfModule mod_headers.c>
