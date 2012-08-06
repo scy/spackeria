@@ -61,7 +61,7 @@ body {
 
 #top, #bot {
 	height:200px;
-	background:#04589f url("flag.png") no-repeat;
+	background:#04589f url("../img/flag.png") no-repeat;
 }
 
 #top {
