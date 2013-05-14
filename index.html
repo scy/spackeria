@@ -184,22 +184,22 @@
 			<div id="top"></div>
 			<div id="listwrap">
 				<ul id="list">
-					<li id="blog" class="first"><a href="http://blog.spackeria.org/">Blog</a></li>
-					<li id="plan"><a href="http://planet.spackeria.org/">Planet</a></li>
-					<li id="twit"><a href="https://twitter.com/spackeria">Twitter</a></li>
-					<li id="face"><a href="https://www.facebook.com/Spackeria">Facebook</a></li>
-					<li id="irc" class="last"><a href="http://blog.spackeria.org/about/">IRC</a>
+					<li id="blog" class="first"><a href="http://blog.spackeria.org/" data-ga="blog">Blog</a></li>
+					<li id="plan"><a href="http://planet.spackeria.org/" data-ga="planet">Planet</a></li>
+					<li id="twit"><a href="https://twitter.com/spackeria" data-ga="twitter">Twitter</a></li>
+					<li id="face"><a href="https://www.facebook.com/Spackeria" data-ga="facebook">Facebook</a></li>
+					<li id="irc" class="last"><a href="http://blog.spackeria.org/about/" data-ga="irc">IRC</a>
 						<ul>
-							<li><a href="http://webchat.freenode.net/?channels=spackeria">Webchat</a></li>
-							<li><a href="irc://chat.eu.freenode.net/spackeria">irc://chat.eu.freenode.net/spackeria</a></li>
-							<li><a href="http://freenode.net/">( we’re on freenode )</a></li>
+							<li><a href="http://webchat.freenode.net/?channels=spackeria" data-ga="irc-web">Webchat</a></li>
+							<li><a href="irc://chat.eu.freenode.net/spackeria" data-ga="irc-irc">irc://chat.eu.freenode.net/spackeria</a></li>
+							<li><a href="http://freenode.net/" data-ga="irc-freenode">( we’re on freenode )</a></li>
 						</ul>
 					</li>
 				</ul>
 			</div>
 			<div id="bot"></div>
 		</div>
-		<div id="spam">built by <a href="http://twitter.com/scy" target="_blank">@scy</a>, <a href="http://twitter.com/demonnes" target="_blank">@demonnes</a> and <a href="http://twitter.com/Poapfel" target="_blank">@Poapfel</a></div>
+		<div id="spam">built by <a href="http://twitter.com/scy" target="_blank" data-ga="by-scy">@scy</a>, <a href="http://twitter.com/demonnes" target="_blank" data-ga="by-demonnes">@demonnes</a> and <a href="http://twitter.com/Poapfel" target="_blank" data-ga="by-poapfel">@Poapfel</a></div>
 
 		<script src="jquery-1.5.2.min.js"></script>
 		<script>
@@ -223,6 +223,19 @@
 				};
 				$('#logo a').click(function (ev) {
 					ev.stopPropagation();
+				});
+				$('a[data-ga]').click(function (ev) {
+					var $this = $(this);
+					var id = $this.data('ga');
+					ga('send', 'event', {
+						eventCategory: 'link',
+						eventAction: 'click',
+						eventLabel: id,
+						hitCallback: function() {
+							document.location.href = $this.attr('href');
+						}
+					});
+					return false;
 				});
 				$('#logo').bind('mouseenter click', function (ev) {
 					anim({
