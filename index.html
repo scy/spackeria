@@ -227,22 +227,14 @@
 				$('a[data-ga]').click(function (ev) {
 					var $this = $(this);
 					var id = $this.data('ga');
-					var tracked = false;
 					var started = new Date().getTime();
 					ga('send', 'event', {
 						eventCategory: 'link',
 						eventAction: 'click',
-						eventLabel: id,
-						hitCallback: function() {
-							tracked = true;
-						}
+						eventLabel: id
 					});
-					while (!tracked && ((new Date().getTime()) - started) < 500) {
+					while (((new Date().getTime()) - started) < 250) {
 					}
-					if (console && console.log) {
-						console.log(tracked);
-					}
-					return true;
 				});
 				$('#logo').bind('mouseenter click', function (ev) {
 					anim({
