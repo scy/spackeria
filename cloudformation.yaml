@@ -1,0 +1,141 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: spackeria.org landing page and redirects
+
+Resources:
+
+  # A CloudFormation distribution that provides https://scy.github.io/spackeria/ at https://spackeria.org/
+  CFDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Aliases: [ spackeria.org ]
+        HttpVersion: http2
+        PriceClass: PriceClass_100 # el cheapo
+        Origins:
+        - Id: GitHub
+          DomainName: scy.github.io
+          OriginPath: /spackeria
+          CustomOriginConfig:
+            OriginProtocolPolicy: https-only
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          TargetOriginId: GitHub
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+          ViewerProtocolPolicy: redirect-to-https
+        ViewerCertificate:
+          # A certificate I registered for spackeria.org and *.spackeria.org
+          AcmCertificateArn: arn:aws:acm:us-east-1:859949227357:certificate/175aa668-b135-49fe-b4ab-d7d01c4d1e00
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1
+
+  # Another one that provides a redirecting S3 bucket at https://blog.spackeria.org/
+  CFBlogDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Aliases: [ blog.spackeria.org ]
+        HttpVersion: http2
+        PriceClass: PriceClass_100 # el cheapo
+        Origins:
+        - Id: RedirectBucket
+          DomainName: !Sub blog.spackeria.org.s3-website-${AWS::Region}.amazonaws.com
+          CustomOriginConfig:
+            OriginProtocolPolicy: http-only # because S3
+        DefaultCacheBehavior:
+          TargetOriginId: RedirectBucket
+          Compress: true
+          ForwardedValues:
+            Cookies:
+              Forward: all
+            QueryString: true
+          ViewerProtocolPolicy: allow-all
+        ViewerCertificate:
+          # A certificate I registered for spackeria.org and *.spackeria.org
+          AcmCertificateArn: arn:aws:acm:us-east-1:859949227357:certificate/175aa668-b135-49fe-b4ab-d7d01c4d1e00
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1
+
+  # This bucket redirects www.spackeria.org to spackeria.org (without www.)
+  RedirectBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: www.spackeria.org
+      AccessControl: BucketOwnerFullControl
+      WebsiteConfiguration:
+        RedirectAllRequestsTo:
+          HostName: spackeria.org
+      Tags:
+      - Key: Project
+        Value: spackeria
+
+  # This bucket redirects blog.spackeria.org to spackeria.wordpress.com
+  BlogRedirectBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: blog.spackeria.org
+      AccessControl: BucketOwnerFullControl
+      WebsiteConfiguration:
+        RedirectAllRequestsTo:
+          HostName: spackeria.wordpress.com
+      Tags:
+      - Key: Project
+        Value: spackeria
+
+  # DNS zone
+  Zone:
+    Type: AWS::Route53::HostedZone
+    Properties:
+      Name: spackeria.org.
+      HostedZoneTags:
+      - Key: Project
+        Value: spackeria
+
+  # DNS records
+  Records:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      Comment: Spackeria
+      HostedZoneId: !Ref Zone
+      RecordSets:
+
+      # alias spackeria.org to CloudFront
+      - Name: spackeria.org.
+        Type: A
+        AliasTarget:
+          HostedZoneId: Z2FDTNDATAQYW2 # global ID for CloudFormation
+          DNSName: !GetAtt CFDistribution.DomainName
+
+      # blog (a CloudFront distribution that points to a redirecting S3 bucket)
+      - Name: blog.spackeria.org.
+        Type: A
+        AliasTarget:
+          HostedZoneId: Z2FDTNDATAQYW2 # global ID for CloudFormation
+          DNSName: !GetAtt CFBlogDistribution.DomainName
+
+      # point www.spackeria.org to the redirect bucket
+      - Name: www.spackeria.org.
+        Type: CNAME
+        ResourceRecords:
+        - !Sub www.spackeria.org.s3-website-${AWS::Region}.amazonaws.com
+        TTL: 3600
+
+      # set Mailgun as the MX
+      # TODO: move to AWS
+      - Name: spackeria.org.
+        Type: MX
+        ResourceRecords:
+        - 10 mxa.mailgun.org
+        - 10 mxb.mailgun.org
+        TTL: 3600
+      - Name: spackeria.org.
+        Type: TXT
+        ResourceRecords: [ '"v=spf1 include:mailgun.org ~all"' ]
+        TTL: 3600
+      - Name: krs._domainkey.spackeria.org.
+        Type: TXT
+        ResourceRecords: [ '"k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDEdtd8ldNIIMUjGeBjRzixEWUy35z8rS6MRMcP7TOSz9t2OaJOL7d/NbBXTZptod2zY2xmYRfHSHRwEXQxzy/Oyx6KpBgZ/tYNO9QwzZySk2daxWj6KhVVctLyjooCJKPZWYlnFNpNrmfvGUSRlr0jIylxkJNq3+fv1J5Nx7BwdQIDAQAB"' ]
+        TTL: 3600
