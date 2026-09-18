@@ -1,0 +1,33 @@
+# Environment variables:
+#   SPACKERIA_ADDR: The address to listen on for the main domain. Should be set
+#     to `spackeria.org` on production.
+#   SPACKERIA_BLOG_ADDR: The address to listen on to redirect `blog.` to the
+#     correct place. Should be set to `blog.spackeria.org` on production.
+#   SPACKERIA_WWW_ADDR: The address to listen on to redirect `www.` to the
+#     correct place. Should be set to `www.spackeria.org` on production.
+#   SPACKERIA_REDIR: The redirect destination for `www.`. Can be changed for
+#     testing purposes, but is already set for production.
+#   SPACKERIA_BLOG_REDIR: The redirect destination for `blog.`. Can be changed
+#     for testing purposes, but is already set for production.
+#   SPACKERIA_ROOT: Directory that contains the document root.
+
+{$SPACKERIA_ADDR:http://localhost:8084} {
+	@hidden {
+		path */.*
+	}
+
+	root * {$SPACKERIA_ROOT:.}
+
+	# Hide files and directories starting with a dot.
+	error @hidden 403
+
+	file_server
+}
+
+{$SPACKERIA_WWW_ADDR:http://www.spackeria.org:8084} {
+	redir {$SPACKERIA_REDIR:https://spackeria.org}{uri} permanent
+}
+
+{$SPACKERIA_BLOG_ADDR:http://blog.spackeria.org:8084} {
+	redir {$SPACKERIA_BLOG_REDIR:https://spackeria.wordpress.com}{uri} temporary
+}
